@@ -2,6 +2,7 @@ use std::collections::HashMap;
 use std::io::Write;
 use std::process::Command;
 
+// Enum for types of input
 enum Input {
     Exit,
     Help,
@@ -14,11 +15,12 @@ enum Input {
 fn main() {
     let mut vars: HashMap<String, f64> = HashMap::new();
     println!("Simple Rust Repl, Type exit to quit");
-    loop {
+    loop { // REPL loop
         print!(">> ");
         // flush the buffer to ensure prompt is displayed
         std::io::stdout().flush().unwrap();
 
+        // Initialize the input variable
         let mut input = String::new();
         std::io::stdin().read_line(&mut input).unwrap();
         let input  = input.trim();
@@ -45,6 +47,7 @@ fn main() {
     }
 }
 
+// Function to parse the input
 fn parse(input: &str) -> Input {
     if input == "exit" {
         Input::Exit
@@ -65,6 +68,7 @@ fn parse(input: &str) -> Input {
 }
 
 
+// Function to print the help message
 fn print_help(){
     println!("Available Inputs:");
     println!("exit                 - Exit the REPL");
