@@ -1,12 +1,14 @@
 use std::collections::HashMap;
 use std::io::Write;
+use std::process::Command;
 
-enum Command {
+enum Input {
     Exit,
     Help,
     Store(String, f64),
     Get(String),
     Invalid(String),
+    Clear,
 }
 
 fn main() {
@@ -23,47 +25,51 @@ fn main() {
 
         match parse(input) {
 
-            Command::Help => print_help(),
-            Command::Exit => break,
-            Command::Store(val , num) => {
+            Input::Help => print_help(),
+            Input::Exit => break,
+            Input::Store(val , num) => {
                 vars.insert(val.clone(), num);
                 println!("Stored variable {} with value {}", val, num);
             },
-            Command::Get(val) => {
+            Input::Get(val) => {
                 if let Some(num) = vars.get(&val) {
                     println!("Variable {} = {}", val, num);
                 } else {
                     println!("Variable {} not found", val);
                 }
             }
-            Command::Invalid(cmd) => println!("Invalid command: {}", cmd),
+            Input::Invalid(cmd) => println!("Invalid Input: {}", cmd),
+            Input::Clear => {Command::new("clear").status().unwrap();},
 
         }
     }
 }
 
-fn parse(input: &str) -> Command {
+fn parse(input: &str) -> Input {
     if input == "exit" {
-        Command::Exit
+        Input::Exit
     } else if input == "help" {
-        Command::Help
+        Input::Help
+    }else if input == "clear" {
+        Input::Clear
     } else if let Some((var, val)) = input.split_once("=") {
         let var = var.trim();
         let val = val.trim().parse().unwrap_or(0.0);
-        Command::Store(var.to_string(), val)
+        Input::Store(var.to_string(), val)
     } else if input.starts_with("get ") {
         let var = input[4..].trim();
-        Command::Get(var.to_string())
+        Input::Get(var.to_string())
     } else {
-        Command::Invalid(input.to_string())
+        Input::Invalid(input.to_string())
     }
 }
 
 
 fn print_help(){
-    println!("Available commands:");
+    println!("Available Inputs:");
     println!("exit                 - Exit the REPL");
     println!("help                 - Show this help message");
+    println!("clear                - Clear the screen");
     println!("<variable>=<value>   - Store a variable with a value");
     println!("get <variable>       - Retrieve the value of a variable");
 }
